@@ -1,3 +1,15 @@
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/components/ui/avatar";
+
 import { useEffect, useState } from "react";
 import RantForm from "../components/RantForm";
 import { getRants, deleteRant } from "../rants/rants";
@@ -34,16 +46,18 @@ export default function Home({ user }) {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 mt-10">
-      <h1 className="text-2xl font-bold">Welcome, {user.name || user.email}</h1>
+    <div className="w-2/3 mx-auto space-y-6 mt-10">
+      <div className="flex justify-between"> 
+        <h1 className="text-2xl font-bold">Welcome, {user.name || user.email}</h1>
 
-      {/* Button to toggle rant form */}
-      <Button onClick={() => {
-        setEditingRant(null);
-        setShowRantForm((prev) => !prev);
-      }}>
-        {showRantForm ? "Cancel" : "Post a Rant"}
-      </Button>
+        {/* Button to toggle rant form */}
+        <Button onClick={() => {
+          setEditingRant(null);
+          setShowRantForm((prev) => !prev);
+        }}>
+          {showRantForm ? "Cancel" : "Post a Rant"}
+        </Button>
+      </div>
 
       {/* Rant form */}
       {showRantForm && (
@@ -61,18 +75,54 @@ export default function Home({ user }) {
       <div className="space-y-4">
         {rants.length === 0 && <p>No rants yet.</p>}
         {rants.map((rant) => (
-          <div key={rant.$id} className="border p-3 rounded flex justify-between items-start">
-            <div>
-              <p>{rant.content}</p>
-              <small>— {rant.username}</small>
-            </div>
-            {rant.userId === user.$id && (
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => handleEdit(rant)}>Edit</Button>
-                <Button size="sm" variant="destructive" onClick={() => handleDelete(rant)}>X</Button>
+          <div
+              key={rant.$id}
+              className="border p-4 rounded space-y-2"
+            >
+              {/* Header: avatar + name + menu */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={rant.avatarUrl} />
+                    <AvatarFallback>
+                      {rant.username?.[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <p className="font-semibold text-sm">
+                    {rant.username}
+                  </p>
+                </div>
+
+                {rant.userId === user.$id && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        ⋮
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEdit(rant)}>
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-red-600"
+                        onClick={() => handleDelete(rant)}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
-            )}
-          </div>
+
+              {/* Content */}
+              <p className="text-sm whitespace-pre-wrap">
+                {rant.content}
+              </p>
+            </div>
+
         ))}
       </div>
     </div>

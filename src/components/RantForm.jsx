@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { databases } from "../lib/appwrite";
 import { APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID } from "../config/config";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { updateRant } from "../rants/rants"; // make sure this is imported
 
@@ -47,10 +47,11 @@ export default function RantForm({ user, onPosted, editingRant, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <Input
+      <Textarea
         placeholder="Write your rant..."
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        rows={4}
       />
       <div className="flex gap-2">
         <Button type="submit" disabled={loading}>
