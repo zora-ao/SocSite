@@ -1,51 +1,61 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import Home from "./pages/Home";
 import WishlistPage from "./pages/WishlistPage";
 import Profile from "./pages/Profile";
 import MemoriesPage from "./pages/MemoriesPage";
+import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 
 import { getCurrentUser, logout } from "./auth/auth";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from "./components/AppSidebar";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState("home");
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
 
+  // ---------------------------
+  // Load current user
+  // ---------------------------
   useEffect(() => {
     getCurrentUser()
       .then(setUser)
       .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+      .finally(() => setAuthLoading(false));
   }, []);
 
   const handleLogout = async () => {
     await logout();
     setUser(null);
-    setCurrentPage("home");
   };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (!user) return <Auth onLoginSuccess={setUser} />;
+  if (authLoading) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
+
+  if (!user) {
+    return <Auth onLoginSuccess={setUser} />;
+  }
 
   return (
-    <SidebarProvider defaultOpen>
+    <Router>
       <div className="flex min-h-screen w-full">
-        <AppSidebar
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          onLogout={handleLogout}
-        />
+        {/* ---------------- Sidebar ---------------- */}
+        <AppSidebar onLogout={handleLogout} />
 
-        <SidebarInset className="p-6">
-          {currentPage === "home" && <Home user={user} />}
-          {currentPage === "wishlist" && <WishlistPage />}
-          {currentPage === "memories" && <MemoriesPage />}
-          {currentPage === "profile" && <Profile />}
-        </SidebarInset>
+        {/* ---------------- Content ---------------- */}
+        <main className="flex-1 px-4 pb-20 overflow-y-auto max-h-screen">
+          <Routes>
+            <Route path="/home" element={<Home user={user} />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/memories" element={<MemoriesPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings onLogout={handleLogout} />} />
+            <Route path="*" element={<Navigate to="/home" />} />
+          </Routes>
+        </main>
       </div>
-    </SidebarProvider>
+    </Router>
   );
 }

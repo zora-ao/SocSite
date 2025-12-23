@@ -1,17 +1,21 @@
-// src/rants.js
+// src/rants/rants.js
 import { databases } from "../lib/appwrite";
-import { APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID } from "../config/config";
+import {
+    APPWRITE_DATABASE_ID,
+    APPWRITE_COLLECTION_ID,
+    } from "../config/config";
 
-// Create a rant
-export async function createRant(user, rantText) {
+    // Create a rant
+    export async function createRant({ user, profile, content }) {
     return await databases.createDocument(
         APPWRITE_DATABASE_ID,
         APPWRITE_COLLECTION_ID,
         "unique()",
         {
-        content: rantText,
+        content,
         userId: user.$id,
-        username: user.name,
+        username: profile.username,
+        avatarId: profile.avatarId, 
         createdAt: new Date().toISOString(),
         }
     );
@@ -19,7 +23,10 @@ export async function createRant(user, rantText) {
 
     // Get all rants
     export async function getRants() {
-    const res = await databases.listDocuments(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID);
+    const res = await databases.listDocuments(
+        APPWRITE_DATABASE_ID,
+        APPWRITE_COLLECTION_ID
+    );
     return res.documents;
     }
 

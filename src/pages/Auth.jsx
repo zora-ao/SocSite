@@ -8,7 +8,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="border rounded-xl p-6 w-[360px]">
+      <div className="border rounded-xl p-6 w-90">
         {mode === "login" ? (
           <>
             <LoginForm onLoginSuccess={() => console.log("Logged in")} />
