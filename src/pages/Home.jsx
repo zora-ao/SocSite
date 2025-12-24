@@ -157,7 +157,7 @@ export default function Home({ user }) {
               key={rant.$id}
               className="border rounded p-4 space-y-2 bg-white shadow-sm"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div className="flex sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
@@ -201,7 +201,7 @@ export default function Home({ user }) {
                 )}
               </div>
 
-              <p className="text-sm whitespace-pre-wrap break-words">{rant.content}</p>
+              <p className="text-sm whitespace-pre-wrap wrap-break-words">{rant.content}</p>
             </div>
           );
         })}

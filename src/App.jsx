@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./auth/AuthContext";
 
 import Home from "./pages/Home";
 import WishlistPage from "./pages/WishlistPage";
@@ -8,54 +8,43 @@ import MemoriesPage from "./pages/MemoriesPage";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 
-import { getCurrentUser, logout } from "./auth/auth";
 import AppSidebar from "./components/AppSidebar";
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+function AppRoutes() {
+  const { user, loading } = useAuth();
 
-  // ---------------------------
-  // Load current user
-  // ---------------------------
-  useEffect(() => {
-    getCurrentUser()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setAuthLoading(false));
-  }, []);
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
 
-  const handleLogout = async () => {
-    await logout();
-    setUser(null);
-  };
-
-  if (authLoading) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
-
-  if (!user) {
-    return <Auth onLoginSuccess={setUser} />;
-  }
+  if (!user) return <Auth />; // reactively show login
 
   return (
-    <Router>
-      <div className="flex min-h-screen w-full">
-        {/* ---------------- Sidebar ---------------- */}
-        <AppSidebar onLogout={handleLogout} />
-
-        {/* ---------------- Content ---------------- */}
-        <main className="flex-1 px-4 pb-20 overflow-y-auto max-h-screen">
-          <Routes>
-            <Route path="/home" element={<Home user={user} />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
-            <Route path="/memories" element={<MemoriesPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings onLogout={handleLogout} />} />
-            <Route path="*" element={<Navigate to="/home" />} />
-          </Routes>
-        </main>
+    <div className="flex min-h-screen">
+      {/* Sidebar: fixed width, full height */}
+      <div className="shrink-0">
+        <AppSidebar className="h-screen fixed" />
       </div>
-    </Router>
+
+      {/* Main content: scrollable independently */}
+      <div className="flex-1 px-6 pb-20 overflow-auto h-screen">
+        <Routes>
+          <Route path="/home" element={<Home user={user} />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/memories" element={<MemoriesPage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<Navigate to="/home" />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }

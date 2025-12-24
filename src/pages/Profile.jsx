@@ -99,7 +99,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-3/4 max-w-5xl mx-auto mt-10 space-y-6">
+    <div className="max-w-5xl mx-auto mt-10 space-y-6">
 
       {/* Avatar */}
       <div className="flex flex-col items-center gap-2">
@@ -123,13 +123,13 @@ export default function Profile() {
 
       {/* Profile Info */}
       {!editMode ? (
-        <>
+        <div className="text-center">
           <h2 className="text-2xl font-bold">{profile.username}</h2>
-          <p className="text-lg">{profile.bio || "No bio yet"}</p>
           <p className="text-sm text-muted-foreground">{profile.course}</p>
-
+          <p className="text-lg my-2">{profile.bio || "No bio yet"}</p>
+          
           <Button onClick={() => setEditMode(true)}>Edit Profile</Button>
-        </>
+        </div>
       ) : (
         <>
           <Input
