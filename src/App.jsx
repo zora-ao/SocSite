@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 
 import Home from "./pages/Home";
+import MusicStreakPage from "./pages/MusicStreakPage"
 import WishlistPage from "./pages/WishlistPage";
 import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
@@ -28,6 +29,8 @@ function AppRoutes() {
       <div className="flex-1 px-6 pb-20 overflow-auto h-screen">
         <Routes>
           <Route path="/home" element={<Home user={user} />} />
+          <Route path="/music" element={<MusicStreakPage user={user} />} />
+
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/memories" element={<MemoriesPage />} />
 
