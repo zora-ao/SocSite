@@ -1,15 +1,16 @@
+// src/components/RantForm.jsx
 import { useState, useEffect } from "react";
 import { databases } from "../lib/appwrite";
 import { APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID } from "../config/config";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { updateRant } from "../rants/rants"; // make sure this is imported
+import { updateRant } from "../rants/rants"; // make sure this is correct
 
-export default function RantForm({ user, onPosted, editingRant, onCancel }) {
+export default function RantForm({ user, editingRant, onPosted, onCancel }) {
   const [content, setContent] = useState(editingRant?.content || "");
   const [loading, setLoading] = useState(false);
 
-  // If the editingRant changes, update the content
+  // Update content when editingRant changes
   useEffect(() => {
     setContent(editingRant?.content || "");
   }, [editingRant]);
@@ -20,10 +21,19 @@ export default function RantForm({ user, onPosted, editingRant, onCancel }) {
 
     try {
       setLoading(true);
+      let result;
+
       if (editingRant) {
-        await updateRant(editingRant.$id, content); // Update existing rant
+        // Update existing rant
+        result = await updateRant(editingRant.$id, content);
+
+        // Make sure userId and username are preserved if not returned by Appwrite
+        result = { ...editingRant, ...result, content };
       } else {
-        await databases.createDocument(
+        // Create new rant
+        if (!user) throw new Error("You must be logged in to post a rant.");
+
+        result = await databases.createDocument(
           APPWRITE_DATABASE_ID,
           APPWRITE_COLLECTION_ID,
           "unique()",
@@ -36,7 +46,7 @@ export default function RantForm({ user, onPosted, editingRant, onCancel }) {
       }
 
       setContent("");
-      onPosted();
+      onPosted?.(result);
     } catch (err) {
       console.error("Error saving rant:", err);
       alert(err.message || "Failed to save rant");
