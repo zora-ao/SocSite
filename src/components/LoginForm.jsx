@@ -31,7 +31,7 @@ export default function LoginForm({ onLoginSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80 mx-auto mt-10">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:w-80 w-56 mx-auto mt-2">
       {error && <p className="text-red-500">{error}</p>}
       
       <Input
