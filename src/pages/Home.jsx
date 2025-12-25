@@ -50,6 +50,7 @@ export default function Home({ user }) {
   const [editingRant, setEditingRant] = useState(null);
   const [songOfTheDay, setSongOfTheDay] = useState(null);
   const [showRantDialog, setShowRantDialog] = useState(false);
+  const [todaysBirthdays, setTodaysBirthdays] = useState([]);
 
   // ---------------------------
   // Load rants + profiles
@@ -68,6 +69,17 @@ export default function Home({ user }) {
     });
 
     setProfiles(profileMap);
+
+    // ---------------------------
+    // Birthday detection
+    // ---------------------------
+    const today = new Date();
+    const birthdaysToday = profileResults.filter((p) => {
+      if (!p?.birthday) return false;
+      const b = new Date(p.birthday);
+      return b.getDate() === today.getDate() && b.getMonth() === today.getMonth();
+    });
+    setTodaysBirthdays(birthdaysToday);
   };
 
   useEffect(() => {
@@ -102,7 +114,7 @@ export default function Home({ user }) {
   if (!user) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="w-full max-w-xl mx-auto space-y-6 mt-4 sm:px-6">
+    <div className="w-full mx-auto space-y-6 mt-4 sm:px-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
@@ -116,9 +128,22 @@ export default function Home({ user }) {
             />
             <AvatarFallback>{profile?.username?.[0]?.toUpperCase()}</AvatarFallback>
           </Avatar>
+
           <h1 className="text-lg sm:text-2xl font-bold">
             Welcome, {profile?.username || user.email}
           </h1>
+
+          {/* Birthday cake icon */}
+          {todaysBirthdays.length > 0 && (
+            <Link to="/birthdays">
+              <button
+                className="text-xl p-2 bg-yellow-100 rounded-full hover:bg-yellow-200 transition"
+                title={`${todaysBirthdays.length} birthday(s) today!`}
+              >
+                🎂
+              </button>
+            </Link>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -167,7 +192,6 @@ export default function Home({ user }) {
                 src={songOfTheDay.previewUrl}
                 className="w-full sm:w-64 mt-2"
               />
-
             </div>
           </div>
         </motion.div>

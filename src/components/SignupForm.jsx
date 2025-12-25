@@ -1,16 +1,14 @@
-// components/SignupForm.jsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "../schemas/signupSchema";
 import { useAuth } from "../auth/AuthContext";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 export default function SignupForm({ onSuccess }) {
   const [submitError, setSubmitError] = useState("");
-  const { signup, login } = useAuth(); // use AuthContext signup/login
+  const { signup, login } = useAuth();
 
   const form = useForm({
     resolver: zodResolver(signupSchema),
@@ -21,9 +19,14 @@ export default function SignupForm({ onSuccess }) {
 
     try {
       // 1️⃣ Create account
-      await signup(data.email, data.password, data.username);
+      await signup(
+        data.email,
+        data.password,
+        data.username,
+        data.birthday
+      );
 
-      // 2️⃣ Auto login (session expiration handled)
+      // 2️⃣ Auto login
       await login(data.email, data.password);
 
       // 3️⃣ Notify parent
@@ -31,13 +34,12 @@ export default function SignupForm({ onSuccess }) {
     } catch (err) {
       const message = err?.message || "Signup failed";
 
-      // 🔒 Handle common/breached passwords
       if (
         message.toLowerCase().includes("data breach") ||
         message.toLowerCase().includes("password")
       ) {
         setSubmitError(
-          "This password is too common or has appeared in a data breach. Please choose a stronger password."
+          "This password is too common or unsafe. Please choose a stronger password."
         );
       } else if (message.toLowerCase().includes("already exists")) {
         setSubmitError("An account with this email already exists.");
@@ -67,6 +69,13 @@ export default function SignupForm({ onSuccess }) {
         <Input placeholder="Email" {...form.register("email")} />
         <p className="text-red-500 text-xs">
           {form.formState.errors.email?.message}
+        </p>
+      </div>
+
+      <div>
+        <Input type="date" {...form.register("birthday")} />
+        <p className="text-red-500 text-xs">
+          {form.formState.errors.birthday?.message}
         </p>
       </div>
 
