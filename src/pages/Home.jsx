@@ -61,6 +61,7 @@ export default function Home({ user }) {
     setRants(data);
 
     const uniqueUserIds = [...new Set(data.map((r) => r.userId).filter(Boolean))];
+
     const profileResults = await Promise.all(uniqueUserIds.map((id) => getProfile(id)));
 
     const profileMap = {};
@@ -68,7 +69,7 @@ export default function Home({ user }) {
       profileMap[id] = profileResults[index];
     });
 
-    setProfiles(profileMap);
+    setProfiles((prev) => ({ ...prev, ...profileMap }));
 
     // ---------------------------
     // Birthday detection
@@ -86,11 +87,24 @@ export default function Home({ user }) {
     if (!user) return;
 
     loadRants();
-    getSongOfTheDay().then(setSongOfTheDay);
+
+    async function loadSong() {
+      const song = await getSongOfTheDay();
+      setSongOfTheDay(song);
+
+      // Fetch profile of the song picker and store in profiles map
+      if (song?.userId && !profiles[song.userId]) {
+        const pickerProfile = await getProfile(song.userId);
+        setProfiles((prev) => ({ ...prev, [song.userId]: pickerProfile }));
+      }
+    }
+
+    loadSong();
 
     async function loadMyProfile() {
       const p = await getProfile(user.$id);
       setProfile(p);
+      setProfiles((prev) => ({ ...prev, [user.$id]: p }));
     }
 
     loadMyProfile();
@@ -186,7 +200,10 @@ export default function Home({ user }) {
             <div className="flex flex-col w-full sm:w-auto">
               <p className="font-semibold">{songOfTheDay.trackName}</p>
               <p className="text-sm text-gray-600">{songOfTheDay.artistName}</p>
-              <p className="text-xs text-gray-500">Picked by {songOfTheDay.username}</p>
+              {/* Display latest username */}
+              <p className="text-xs text-gray-500">
+                Picked by {profiles[songOfTheDay.userId]?.username || "Unknown"}
+              </p>
               <audio
                 controls
                 src={songOfTheDay.previewUrl}
