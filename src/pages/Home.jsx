@@ -161,31 +161,31 @@ export default function Home({ user }) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          {/* Music */}
-          <Link to="/music">
-            <Button variant="outline" className="w-full sm:w-auto">
-              🎵 Music Streak
-            </Button>
-          </Link>
-
-          {/* Calendar */}
-          <Link to="/calendar">
-            <Button variant="outline" className="w-full sm:w-auto">
-              📅 Calendar
-            </Button>
-          </Link>
-
-          {/* Post Rant */}
-          <Button
-            className="w-full sm:w-auto"
-            onClick={() => {
-              setEditingRant(null);
-              setShowRantDialog(true);
-            }}
-          >
-            Post a Rant
+        {/* Music */}
+        <Link to="/music">
+          <Button variant="outline" className="w-full sm:w-auto">
+            🎵 Music Streak
           </Button>
-        </div>
+        </Link>
+
+        {/* Calendar */}
+        <Link to="/calendar">
+          <Button vzzariant="outline" className="w-full sm:w-auto">
+            📅 Calendar
+          </Button>
+        </Link>
+
+        {/* Post Rant */}
+        <Button
+          className="w-full sm:w-auto"
+          onClick={() => {
+            setEditingRant(null);
+            setShowRantDialog(true);
+          }}
+        >
+          Post a Rant
+        </Button>
+      </div>
 
       </div>
 
@@ -308,7 +308,7 @@ export default function Home({ user }) {
                   {rant.userId && user.$id === rant.userId && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="pointer-events-auto">
                           ⋮
                         </Button>
                       </DropdownMenuTrigger>
