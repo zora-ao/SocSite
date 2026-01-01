@@ -161,12 +161,21 @@ export default function Home({ user }) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          {/* Music */}
           <Link to="/music">
             <Button variant="outline" className="w-full sm:w-auto">
               🎵 Music Streak
             </Button>
           </Link>
 
+          {/* Calendar */}
+          <Link to="/calendar">
+            <Button variant="outline" className="w-full sm:w-auto">
+              📅 Calendar
+            </Button>
+          </Link>
+
+          {/* Post Rant */}
           <Button
             className="w-full sm:w-auto"
             onClick={() => {
@@ -177,6 +186,7 @@ export default function Home({ user }) {
             Post a Rant
           </Button>
         </div>
+
       </div>
 
       {/* Song of the Day */}
@@ -316,7 +326,7 @@ export default function Home({ user }) {
                   )}
                 </div>
 
-                <p className="text-sm whitespace-pre-wrap break-words">{rant.content}</p>
+                <p className="text-sm whitespace-pre-wrap wrap-break-words">{rant.content}</p>
               </motion.div>
             );
           })}

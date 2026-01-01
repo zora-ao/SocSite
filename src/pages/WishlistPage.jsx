@@ -17,6 +17,9 @@ import {
   deleteWishlistItem,
 } from "../wishlist/wishlist";
 
+import cam1 from "../assets/cam1.png";
+import star2 from "../assets/star2.png"
+
 export default function WishlistPage() {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
@@ -89,7 +92,12 @@ export default function WishlistPage() {
   // ---------------------------
   return (
     <div className="max-w-xl mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold">Anonymous Wishlist</h1>
+      <div className="flex md:relative items-center justify-center">
+        <img src={star2} alt="star_img" className="absolute left-10 top-10 md:top-5 h-8" />
+        <img src={star2} alt="star_img" className="absolute right-10 top-10 md:top-5 h-8" />
+        <h1 className="pacifico text-2xl">Bucket / Bakit List</h1>
+        <img className="relative h-16 rotate-12" src={cam1} alt="" />
+      </div>
 
       {/* Form */}
       <div className="space-y-2">
@@ -103,7 +111,7 @@ export default function WishlistPage() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <Button onClick={handleSubmit}>
+        <Button className="w-full bg-[#5D866C]" onClick={handleSubmit}>
           {editingId ? "Update Item" : "Add Item"}
         </Button>
       </div>
@@ -118,11 +126,11 @@ export default function WishlistPage() {
           return (
             <div
               key={item.$id}
-              className="border p-3 rounded flex justify-between items-start"
+              className="borde p-3 rounded flex justify-between items-start bg-white"
             >
               <div>
                 <p className="font-medium">{item.title}</p>
-                <p className="text-sm text-gray-500">{item.description}</p>
+                <p className="text-sm text-gray-600">{item.description}</p>
               </div>
 
               {/* ONLY OWNER SEES THIS */}

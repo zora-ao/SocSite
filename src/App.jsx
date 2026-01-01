@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./auth/AuthContext";
 import Home from "./pages/Home";
 import Birthdays from "./pages/Birthdays";
 import MusicStreakPage from "./pages/MusicStreakPage";
+import CalendarPage from "./pages/CalendarPage";
 import WishlistPage from "./pages/WishlistPage";
 import Profile from "./pages/Profile";
 import UserProfile from "./pages/UserProfile";
@@ -27,11 +28,13 @@ function AppRoutes() {
       </div>
 
       {/* Main content scrollable */}
-      <div className="flex-1 px-6 pb-20 overflow-auto h-screen">
+      <div className="flex-1 px-6 pb-20 overflow-auto h-screen bg-[#F5F5F0]">
         <Routes>
           <Route path="/home" element={<Home user={user} />} />
           <Route path="/birthdays" element={<Birthdays />} />
           <Route path="/music" element={<MusicStreakPage user={user} />} />
+          <Route path="/calendar" element={<CalendarPage user={user} />}/>
+
 
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/memories" element={<MemoriesPage />} />
