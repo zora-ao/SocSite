@@ -183,7 +183,7 @@ export default function Home({ user }) {
             setShowRantDialog(true);
           }}
         >
-          Post a Rant
+          Post A Rant
         </Button>
       </div>
 
