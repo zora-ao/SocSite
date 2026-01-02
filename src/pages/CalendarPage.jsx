@@ -1,7 +1,6 @@
 // src/pages/CalendarPage.jsx
 import { useEffect, useState } from "react";
 import { databases, ID } from "../lib/appwrite";
-import { Query } from "appwrite";
 import { APPWRITE_DATABASE_ID, COLLECTION_ID } from "../config/config";
 
 export default function CalendarPage({ user }) {
@@ -25,13 +24,9 @@ export default function CalendarPage({ user }) {
   }, []);
 
   async function fetchEvents() {
-    if (!user) return;
     try {
-      const res = await databases.listDocuments(
-        APPWRITE_DATABASE_ID,
-        COLLECTION_ID,
-        [Query.equal("userId", user.$id)]
-      );
+      // Fetch all events for everyone
+      const res = await databases.listDocuments(APPWRITE_DATABASE_ID, COLLECTION_ID);
       setEvents(res.documents);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -62,7 +57,8 @@ export default function CalendarPage({ user }) {
   }
 
   async function saveSchedule() {
-    if (!title || !time) return;
+    if (!title || !time || !user) return;
+
     try {
       await databases.createDocument(APPWRITE_DATABASE_ID, COLLECTION_ID, ID.unique(), {
         userId: user.$id,
@@ -84,7 +80,6 @@ export default function CalendarPage({ user }) {
       .sort((a, b) => a.time.localeCompare(b.time));
   };
 
-  // format 24h time to 12h with AM/PM
   const formatTime12Hour = (time24) => {
     if (!time24) return "";
     const [hourStr, minute] = time24.split(":");
@@ -94,7 +89,6 @@ export default function CalendarPage({ user }) {
     return `${hour}:${minute} ${ampm}`;
   };
 
-  // get 3-letter weekday (Mon, Tue...)
   const getDayAbbrev = (day, month, year) => {
     const dateObj = new Date(year, month, day);
     return dateObj.toLocaleDateString("en-US", { weekday: "short" });
@@ -138,6 +132,9 @@ export default function CalendarPage({ user }) {
                   >
                     <p className="font-semibold truncate">{event.title}</p>
                     <p className="text-[10px]">{formatTime12Hour(event.time)}</p>
+                    {event.description && (
+                      <p className="text-[10px] text-gray-500 line-clamp-2">{event.description}</p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -152,10 +149,10 @@ export default function CalendarPage({ user }) {
           <div className="bg-white rounded-xl p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-semibold mb-4 text-center">{selectedDate}</h2>
 
-            {/* Existing events for that day */}
+            {/* Existing events */}
             {getDayEvents(selectedDate).length > 0 && (
               <div className="mb-4">
-                <h3 className="font-medium mb-2">Existing Events:</h3>
+                <h3 className="font-medium mb-2">Events:</h3>
                 <div className="flex flex-col gap-2">
                   {getDayEvents(selectedDate).map((event) => (
                     <div
@@ -170,32 +167,34 @@ export default function CalendarPage({ user }) {
                         )}
                       </div>
 
-                      {/* Delete button */}
-                      <button
-                        className="text-red-600 font-bold ml-2 text-sm hover:text-red-800"
-                        onClick={async () => {
-                          try {
-                            await databases.deleteDocument(
-                              APPWRITE_DATABASE_ID,
-                              COLLECTION_ID,
-                              event.$id
-                            );
-                            fetchEvents();
-                          } catch (error) {
-                            console.error("Error deleting event:", error);
-                          }
-                        }}
-                        title="Delete this event"
-                      >
-                        ✕
-                      </button>
+                      {/* Only creator can delete */}
+                      {event.userId === user.$id && (
+                        <button
+                          className="text-red-600 font-bold ml-2 text-sm hover:text-red-800"
+                          onClick={async () => {
+                            try {
+                              await databases.deleteDocument(
+                                APPWRITE_DATABASE_ID,
+                                COLLECTION_ID,
+                                event.$id
+                              );
+                              fetchEvents();
+                            } catch (error) {
+                              console.error("Error deleting event:", error);
+                            }
+                          }}
+                          title="Delete this event"
+                        >
+                          ✕
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Add new event form */}
+            {/* Add new event */}
             <div className="flex flex-col gap-3">
               <input
                 className="w-full border rounded px-3 py-2 text-sm"

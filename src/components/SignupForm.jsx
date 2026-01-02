@@ -18,7 +18,6 @@ export default function SignupForm({ onSuccess }) {
     setSubmitError("");
 
     try {
-      // 1️⃣ Create account
       await signup(
         data.email,
         data.password,
@@ -26,10 +25,7 @@ export default function SignupForm({ onSuccess }) {
         data.birthday
       );
 
-      // 2️⃣ Auto login
       await login(data.email, data.password);
-
-      // 3️⃣ Notify parent
       onSuccess();
     } catch (err) {
       const message = err?.message || "Signup failed";
@@ -52,46 +48,69 @@ export default function SignupForm({ onSuccess }) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-4 w-80 mx-auto"
+      className="
+        space-y-4
+        w-full max-w-md
+        mx-auto
+        px-2 sm:px-0
+      "
     >
       {submitError && (
         <p className="text-red-500 text-sm text-center">{submitError}</p>
       )}
 
+      {/* Username */}
       <div>
-        <Input placeholder="Username" {...form.register("username")} />
-        <p className="text-red-500 text-xs">
+        <Input
+          placeholder="Username"
+          {...form.register("username")}
+          className="h-11 sm:h-10"
+        />
+        <p className="text-red-500 text-xs mt-1">
           {form.formState.errors.username?.message}
         </p>
       </div>
 
+      {/* Email */}
       <div>
-        <Input placeholder="Email" {...form.register("email")} />
-        <p className="text-red-500 text-xs">
+        <Input
+          placeholder="Email"
+          type="email"
+          {...form.register("email")}
+          className="h-11 sm:h-10"
+        />
+        <p className="text-red-500 text-xs mt-1">
           {form.formState.errors.email?.message}
         </p>
       </div>
 
+      {/* Birthday */}
       <div>
-        <Input type="date" {...form.register("birthday")} />
-        <p className="text-red-500 text-xs">
+        <Input
+          type="date"
+          {...form.register("birthday")}
+          className="h-11 sm:h-10"
+        />
+        <p className="text-red-500 text-xs mt-1">
           {form.formState.errors.birthday?.message}
         </p>
       </div>
 
+      {/* Password */}
       <div>
         <Input
           type="password"
           placeholder="Password"
           {...form.register("password")}
+          className="h-11 sm:h-10"
         />
-        <p className="text-red-500 text-xs">
+        <p className="text-red-500 text-xs mt-1">
           {form.formState.errors.password?.message}
         </p>
       </div>
 
       <Button
-        className="w-full"
+        className="w-full h-11 bg-[#5D866C] active:scale-95 transition-transform"
         type="submit"
         disabled={form.formState.isSubmitting}
       >

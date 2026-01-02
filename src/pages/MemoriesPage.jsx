@@ -40,7 +40,7 @@ export default function MemoriesPage() {
 
   return (
     <div className="max-w-5xl mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Memories</h1>
+      <h1 className="text-2xl pacifico font-bold text-center">Memories</h1>
 
       {/* Upload Section */}
       <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
@@ -54,7 +54,7 @@ export default function MemoriesPage() {
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
         />
-        <Button onClick={handleUpload} disabled={!file}>
+        <Button className="bg-[#5D866C]" onClick={handleUpload} disabled={!file}>
           Upload
         </Button>
       </div>

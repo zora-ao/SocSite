@@ -1,4 +1,4 @@
-// src/pages/Home.jsx
+import { Music,Flame, CirclePlus, CalendarRange } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -128,7 +128,7 @@ export default function Home({ user }) {
   if (!user) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="w-full mx-auto space-y-6 mt-4 sm:px-6">
+    <div className="w-full inter mx-auto space-y-6 mt-4 sm:px-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
@@ -160,30 +160,30 @@ export default function Home({ user }) {
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex sm:flex-row gap-2 w-full sm:w-auto">
         {/* Music */}
         <Link to="/music">
-          <Button variant="outline" className="w-full sm:w-auto">
-            🎵 Music Streak
+          <Button variant="outline" className="w-full rounded-full sm:w-auto">
+            <Flame color="red" /> 
           </Button>
         </Link>
 
         {/* Calendar */}
         <Link to="/calendar">
-          <Button vzzariant="outline" className="w-full sm:w-auto">
-            📅 Calendar
+          <Button vzzariant="outline" className="w-full sm:w-auto bg-[#5D866C]">
+            <CalendarRange /> Schedules
           </Button>
         </Link>
 
         {/* Post Rant */}
         <Button
-          className="w-full sm:w-auto"
+          className="sm:w-auto bg-[#5D866C]"
           onClick={() => {
             setEditingRant(null);
             setShowRantDialog(true);
           }}
         >
-          Post A Rant
+          <CirclePlus /> Post
         </Button>
       </div>
 
@@ -197,7 +197,7 @@ export default function Home({ user }) {
           className="border rounded-lg p-4 bg-yellow-50 shadow-sm space-y-3"
         >
           <h2 className="font-bold text-lg flex items-center gap-2">
-            🎵 Song of the Day
+            <Music /> Song of the Day
           </h2>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -279,7 +279,7 @@ export default function Home({ user }) {
                 layout
                 className="border rounded p-4 space-y-2 bg-white shadow-sm"
               >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="flex sm:flex-row justify-between items-start sm:items-center gap-3">
                   <Link
                     to={`/profile/${rant.userId}`}
                     className="flex items-center gap-3 hover:opacity-80 w-full sm:w-auto"

@@ -50,7 +50,7 @@ export default function LoginForm({ onLoginSuccess }) {
         required
       />
       
-      <Button type="submit" disabled={loading}>
+      <Button className="bg-[#5D866C]" type="submit" disabled={loading}>
         {loading ? "Logging in..." : "Login"}
       </Button>
     </form>

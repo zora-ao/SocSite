@@ -93,15 +93,25 @@ export default function RantForm({ user, editingRant, onPosted, onCancel }) {
       </Button>
 
       {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div
-          ref={pickerRef}
-          className="absolute z-50 mt-2 shadow-lg"
-          style={{ maxWidth: "300px" }}
-        >
-          <Picker data={emojiData} onEmojiSelect={addEmoji} />
-        </div>
-      )}
+    {showEmojiPicker && (
+  <div
+    ref={pickerRef}
+    className="
+  absolute z-50 mt-2 shadow-lg
+  left-1/2 -translate-x-1/2
+  sm:left-0 sm:translate-x-0
+
+  scale-90 sm:scale-100
+  sm:max-w-[300px]
+  overflow-y-auto
+"
+
+  >
+    <Picker data={emojiData} onEmojiSelect={addEmoji} />
+  </div>
+)}
+
+
 
       <div className="flex gap-2 mt-2">
         <Button type="submit" disabled={loading}>

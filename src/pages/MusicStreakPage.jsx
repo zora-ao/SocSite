@@ -12,6 +12,7 @@ import {
 } from "../music/dailySongs";
 import { searchSongs } from "../music/searchSongs";
 import { getProfile } from "../profile/profile";
+import playlist from "../assets/playlist1.png";
 
 export default function MusicStreakPage({ user }) {
   const navigate = useNavigate();
@@ -30,7 +31,6 @@ export default function MusicStreakPage({ user }) {
   const calculateStreak = (submissions) => {
     if (!submissions || submissions.length === 0) return 0;
 
-    // Sort by date descending
     submissions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     let streakCount = 1;
@@ -38,7 +38,9 @@ export default function MusicStreakPage({ user }) {
 
     for (let i = 1; i < submissions.length; i++) {
       const currentDate = new Date(submissions[i].date);
-      const diffDays = Math.floor((previousDate - currentDate) / (1000 * 60 * 60 * 24));
+      const diffDays = Math.floor(
+        (previousDate - currentDate) / (1000 * 60 * 60 * 24)
+      );
 
       if (diffDays === 1) {
         streakCount++;
@@ -58,15 +60,13 @@ export default function MusicStreakPage({ user }) {
     if (!user) return;
 
     async function load() {
-      // Load user profile
       const p = await getProfile(user.$id);
       setProfile(p);
 
-      // Load today's song
       const todaySong = await getSongOfTheDay();
       setSongOfTheDay(todaySong);
 
-      // Check if user already submitted today
+      // Check if user already submitted today (or if someone else submitted)
       const submissions = await getUserSubmissions(user.$id);
       const today = new Date();
       const submittedToday = submissions.some((s) => {
@@ -77,7 +77,7 @@ export default function MusicStreakPage({ user }) {
           d.getDate() === today.getDate()
         );
       });
-      setAlreadySubmitted(submittedToday);
+      setAlreadySubmitted(submittedToday || !!todaySong);
 
       // Calculate streak
       setStreak(calculateStreak(submissions));
@@ -91,6 +91,8 @@ export default function MusicStreakPage({ user }) {
   // ---------------------------
   const handleSearch = async (e) => {
     e.preventDefault();
+    if (!query.trim()) return;
+
     setLoading(true);
     const songs = await searchSongs(query);
     setResults(songs);
@@ -102,39 +104,45 @@ export default function MusicStreakPage({ user }) {
   // ---------------------------
   const handleSelectSong = async (song) => {
     try {
-      // Check if someone already picked today
       const todaySong = await getSongOfTheDay();
+
       if (todaySong) {
         alert(
-          `Someone already picked today's song: "${todaySong.trackName}" by ${todaySong.username}`
+          `Sorry! Today's song has already been picked by ${todaySong.username}: "${todaySong.trackName}" by ${todaySong.artistName}`
         );
         setSongOfTheDay(todaySong);
         setAlreadySubmitted(true);
         return;
       }
 
+      // Submit the song
       const saved = await submitDailySong(user, song);
+
+      // Lock it for everyone
       setSongOfTheDay(saved);
       setAlreadySubmitted(true);
       setResults([]);
       setQuery("");
 
-      // Update streak after submission
+      // Update streak
       const submissions = await getUserSubmissions(user.$id);
       setStreak(calculateStreak(submissions));
     } catch (err) {
       console.error(err);
-      alert("Failed to submit song");
+      alert(err?.message || "Failed to submit song");
     }
   };
 
-  if (!user || !profile) return <p className="text-center mt-10">Loading...</p>;
+  if (!user || !profile)
+    return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="max-w-xl mx-auto mt-6 sm:px-6">
-      <Button variant="ghost" onClick={() => navigate("/")} className="mb-4">
-        ← Back to Home
-      </Button>
+    <div className="relative max-w-xl mx-auto mt-6 sm:px-6 inter">
+      <img
+        className="absolute h-26 -right-6 -top-10 rotate-12"
+        src={playlist}
+        alt="playlist"
+      />
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <h1 className="text-2xl sm:text-3xl font-bold">🎵 Music Streak</h1>
@@ -143,6 +151,7 @@ export default function MusicStreakPage({ user }) {
         </p>
       </motion.div>
 
+      {/* Streak */}
       <Card className="mt-4">
         <CardContent className="p-4 flex justify-between">
           <span>🔥 Your Streak</span>
@@ -150,9 +159,10 @@ export default function MusicStreakPage({ user }) {
         </CardContent>
       </Card>
 
+      {/* Song of the Day */}
       {songOfTheDay && (
-        <Card className="mt-4">
-          <CardContent className="p-4 space-y-3">
+        <Card className="mt-4 bg-black text-white">
+          <CardContent className="px-4 space-y-3">
             <h2 className="font-bold text-lg sm:text-xl">🏆 Song of the Day</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <img
@@ -160,11 +170,11 @@ export default function MusicStreakPage({ user }) {
                 className="w-full sm:w-24 h-36 rounded object-cover"
               />
               <div>
-                <p className="font-semibold text-sm sm:text-base">{songOfTheDay.trackName}</p>
-                <p className="text-xs sm:text-sm text-gray-700">{songOfTheDay.artistName}</p>
-                <p className="text-xs text-gray-500">
-                  Picked by {profile.username}
+                <p className="font-semibold text-sm sm:text-base">
+                  {songOfTheDay.trackName}
                 </p>
+                <p className="text-xs sm:text-sm">{songOfTheDay.artistName}</p>
+                <p className="text-xs">Picked by {songOfTheDay.username}</p>
                 <audio
                   controls
                   src={songOfTheDay.previewUrl}
@@ -176,10 +186,14 @@ export default function MusicStreakPage({ user }) {
         </Card>
       )}
 
+      {/* Submit Section */}
       {!alreadySubmitted && (
         <Card className="mt-4">
           <CardContent className="p-4 space-y-3">
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
+            <form
+              onSubmit={handleSearch}
+              className="flex flex-col sm:flex-row gap-2"
+            >
               <Input
                 placeholder="Search a song..."
                 value={query}
@@ -187,7 +201,7 @@ export default function MusicStreakPage({ user }) {
                 className="flex-1"
               />
               <Button type="submit" disabled={loading}>
-                Search
+                {loading ? "Searching..." : "Search"}
               </Button>
             </form>
 
@@ -202,10 +216,15 @@ export default function MusicStreakPage({ user }) {
                   <img
                     src={song.artworkUrl}
                     className="w-24 h-24 sm:w-14 sm:h-14 rounded object-cover"
+                    alt={song.trackName}
                   />
                   <div className="flex-1 text-center sm:text-left">
-                    <p className="font-semibold text-sm sm:text-base">{song.trackName}</p>
-                    <p className="text-xs sm:text-sm text-gray-500">{song.artistName}</p>
+                    <p className="font-semibold text-sm sm:text-base">
+                      {song.trackName}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-500">
+                      {song.artistName}
+                    </p>
                   </div>
                 </motion.div>
               ))}
@@ -214,9 +233,9 @@ export default function MusicStreakPage({ user }) {
         </Card>
       )}
 
-      {alreadySubmitted && (
+      {alreadySubmitted && !songOfTheDay && (
         <p className="text-center text-gray-500 mt-4">
-          You already submitted today 🎧
+          Someone already submitted today 🎧
         </p>
       )}
     </div>
