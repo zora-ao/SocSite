@@ -79,12 +79,12 @@ export default function AppSidebar() {
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            className="absolute bottom-0 h-1 w-12 bg-orange-800 rounded-full"
+            className="absolute bottom-1 h-1 w-12 bg-orange-800 rounded-full"
             style={{
               left: `${
                 [...links.map((l) => l.path), "/settings"].indexOf(currentPath) *
-                20 +
-                2
+                1 +
+                1
               }%`,
             }}
           />
